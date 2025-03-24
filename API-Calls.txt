@@ -1,0 +1,8 @@
+#PYTHON --> SPRING
+			POST request-- http://localhost:8080/api/vehicles/entry
+			Body(JSON)-- {
+   				 	"vehicleNumber": "UP32PD1713",
+   				 	"entryGate": 3,
+    				 	"vehicleType": "PRIVATE",
+    				 	"imageName": "vehicle_1234.jpg"
+				     }
