@@ -2,6 +2,7 @@ package com.bbau.vehicledetection.backend.service;
 
 import com.bbau.vehicledetection.backend.entity.VehicleEntry;
 import com.bbau.vehicledetection.backend.entity.VehicleStatus;
+import com.bbau.vehicledetection.backend.entity.VehicleType;
 import com.bbau.vehicledetection.backend.repository.VehicleEntryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,6 +64,26 @@ public class VehicleEntryService {
     public List<VehicleEntry> getAllEntries() {
         return vehicleEntryRepository.findAll();
     }
+
+    // ✅ Get all rows for a specific vehicle number
+    public List<VehicleEntry> getEntriesByVehicleNumber(String vehicleNumber) {
+        return vehicleEntryRepository.findAllByVehicleNumber(vehicleNumber);
+    }
+
+    // ✅ Get all rows for a specific date
+    public List<VehicleEntry> getEntriesByDate(LocalDate date) {
+        return vehicleEntryRepository.findAllByDate(date);
+
+    
+}
+
+// ✅ Get all rows for a specific vehicle type
+public List<VehicleEntry> getEntriesByVehicleType(String vehicleType) {
+        VehicleType type = VehicleType.valueOf(vehicleType.toUpperCase()); // Convert String to ENUM
+        return vehicleEntryRepository.findAllByVehicleType(type);
+    }
+
+
 }
 
 

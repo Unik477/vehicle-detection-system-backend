@@ -6,7 +6,7 @@ import com.bbau.vehicledetection.backend.service.VehicleEntryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -43,6 +43,26 @@ public class VehicleEntryController {
     public List<VehicleEntry> getAllVehicleEntries() {
         return vehicleEntryService.getAllEntries();
     }
+
+    // ✅ Get all rows for a specific vehicle number
+    @GetMapping("/{vehicleNumber}")
+    public List<VehicleEntry> getEntriesByVehicleNumber(@PathVariable String vehicleNumber) {
+        return vehicleEntryService.getEntriesByVehicleNumber(vehicleNumber);
+    }
+
+    // ✅ Get all rows for a specific date
+    @GetMapping("/date/{date}")
+    public List<VehicleEntry> getEntriesByDate(@PathVariable String date) {
+        LocalDate parsedDate = LocalDate.parse(date); // Parse the date string to LocalDate
+        return vehicleEntryService.getEntriesByDate(parsedDate);
+    }
+
+    // ✅ Get all rows for a specific vehicle type
+    @GetMapping("/type/{vehicleType}")
+    public List<VehicleEntry> getEntriesByVehicleType(@PathVariable String vehicleType) {
+        return vehicleEntryService.getEntriesByVehicleType(vehicleType);
+    }
+
 }
 
 
