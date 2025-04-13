@@ -21,3 +21,12 @@
 				--> Get All Rows for a Specific Date(GET)-- http://localhost:8080/api/vehicles/date/{date(format- YYYY-MM-DD)}
 
 				--> Get All Rows for a Specific Vehicle Type(GET)-- http://localhost:8080/api/vehicles/type/{vehicleType(IN CAPS)}
+
+###############################################################################################################
+
+## LOGIN 
+				--> POST http://localhost:8080/api/auth/login
+				    BODY (raw-JSON)- {
+    							"username": "admin",
+    							"password": "admin@123"
+						     }
