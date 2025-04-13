@@ -1,8 +1,8 @@
 package com.bbau.vehicledetection.backend.service;
 
-import com.bbau.vehicledetection.backend.entity.VehicleEntry;
-import com.bbau.vehicledetection.backend.entity.VehicleStatus;
-import com.bbau.vehicledetection.backend.entity.VehicleType;
+import com.bbau.vehicledetection.backend.entity.VehicleEntry.VehicleEntry;
+import com.bbau.vehicledetection.backend.entity.VehicleEntry.VehicleStatus;
+import com.bbau.vehicledetection.backend.entity.VehicleEntry.VehicleType;
 import com.bbau.vehicledetection.backend.repository.VehicleEntryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

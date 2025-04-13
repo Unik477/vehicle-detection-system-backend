@@ -1,11 +1,11 @@
 package com.bbau.vehicledetection.backend.repository;
 
-import com.bbau.vehicledetection.backend.entity.VehicleEntry;
-import com.bbau.vehicledetection.backend.entity.VehicleStatus;
-import com.bbau.vehicledetection.backend.entity.VehicleType;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.bbau.vehicledetection.backend.entity.VehicleEntry.VehicleEntry;
+import com.bbau.vehicledetection.backend.entity.VehicleEntry.VehicleStatus;
+import com.bbau.vehicledetection.backend.entity.VehicleEntry.VehicleType;
 
 import java.time.LocalDate;
 import java.util.List;

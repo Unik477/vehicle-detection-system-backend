@@ -1,4 +1,4 @@
-package com.bbau.vehicledetection.backend.entity;
+package com.bbau.vehicledetection.backend.entity.VehicleEntry;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;

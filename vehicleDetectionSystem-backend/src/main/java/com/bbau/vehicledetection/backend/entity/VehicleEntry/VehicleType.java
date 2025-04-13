@@ -1,4 +1,4 @@
-package com.bbau.vehicledetection.backend.entity;
+package com.bbau.vehicledetection.backend.entity.VehicleEntry;
 
 public enum VehicleType {
     PRIVATE,
