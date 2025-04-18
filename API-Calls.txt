@@ -30,3 +30,25 @@
     							"username": "admin",
     							"password": "admin@123"
 						     }
+
+###############################################################################################################
+
+## BLOCKED VEHICLES 
+				--> CHECK IF A VEHICLE IS BLOCKED-- (GET) http://localhost:8080/api/blocked-vehicles/check/{vehicleNumber}
+
+				--> GET DETAILS OF A BLOCKED VEHICLE-- (GET) http://localhost:8080/api/blocked-vehicles/{vehicleNumber}
+
+				--> BLOCK A VEHICLE-- (POST) http://localhost:8080/api/blocked-vehicles/block
+						BODY (raw-JSON):
+						{
+   						 	"vehicleNumber": "UP32PD3770",
+    							"blockedBy": "Admin",
+    							"blockedReason": "Suspicious activity"
+						}
+
+				--> ALLOW A PREVIOUSLY BLOCKED VEHICLE-- (POST) http://localhost:8080/api/blocked-vehicles/allow/{vehicleNumber}
+						BODY (raw-JSON):
+						{
+   							 "allowedBy": "Guard John",
+    							 "allowedReason": "Emergency vehicle"
+						}
