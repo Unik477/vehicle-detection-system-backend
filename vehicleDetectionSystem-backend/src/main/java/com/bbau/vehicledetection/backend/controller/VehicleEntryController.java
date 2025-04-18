@@ -66,29 +66,4 @@ public class VehicleEntryController {
 
 
 
-    //------------------METHODS---------------
-//     public VehicleEntry handleVehicleEntryOrExit(VehicleEntry vehicleEntry) {
-//     // Get today's date
-//     LocalDate today = LocalDate.now();
-
-//     // Check if the vehicle has an active entry for today
-//     List<VehicleEntry> entries = vehicleEntryRepository.findByVehicleNumber(vehicleEntry.getVehicleNumber());
-//     for (VehicleEntry entry : entries) {
-//         if (entry.getDate().equals(today) && entry.getStatus() == VehicleStatus.IN) {
-//             // If the vehicle is already inside, mark it as exited
-//             entry.setExitTime(LocalDateTime.now());
-//             entry.setExitGate(vehicleEntry.getEntryGate()); // Use the current gate as the exit gate
-//             entry.setStatus(VehicleStatus.OUT);
-//             return vehicleEntryRepository.save(entry);
-//         }
-//     }
-
-//     // If no active entry exists for today, register a new entry
-//     vehicleEntry.setEntryTime(LocalDateTime.now());
-//     vehicleEntry.setDate(today);
-//     vehicleEntry.setStatus(VehicleStatus.IN);
-//     return vehicleEntryRepository.save(vehicleEntry);
-// }
-// }
-
-
+    
