@@ -12,14 +12,32 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bbau.vehicledetection.backend.service.UserService;
+import com.bbau.vehicledetection.backend.service.WebSocketSender;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin("*")  
+@CrossOrigin("*")
 public class AuthController {
 
     @Autowired
+    private WebSocketSender webSocketSender;
+
+    @Autowired
     private UserService userService;
+
+    // @PostMapping("/login")
+    // public ResponseEntity<String> login(@RequestBody Map<String, String> loginData) {
+    //     String username = loginData.get("username");
+    //     String password = loginData.get("password");
+
+    //     boolean isAuthenticated = userService.authenticateUser(username, password);
+
+    //     if (isAuthenticated) {
+    //         return ResponseEntity.ok("Login successful");
+    //     } else {
+    //         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+    //     }
+    // }
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody Map<String, String> loginData) {
@@ -29,10 +47,11 @@ public class AuthController {
         boolean isAuthenticated = userService.authenticateUser(username, password);
 
         if (isAuthenticated) {
+            webSocketSender.send("/topic/login", username + " has logged in.");
             return ResponseEntity.ok("Login successful");
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
     }
-}
 
+}

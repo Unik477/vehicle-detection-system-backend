@@ -12,6 +12,7 @@ import java.util.Optional;
 @Repository
 public interface BlockedVehicleRepository extends JpaRepository<BlockedVehicle, Long> {
 
+
     Optional<BlockedVehicle> findByVehicleNumberAndStatus(String vehicleNumber, BlockedVehicle.Status status);
 
     boolean existsByVehicleNumberAndStatus(String vehicleNumber, BlockedVehicle.Status status);
