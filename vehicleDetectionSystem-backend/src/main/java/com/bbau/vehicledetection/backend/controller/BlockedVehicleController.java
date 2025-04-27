@@ -61,7 +61,7 @@ public class BlockedVehicleController {
                 request.getBlockedBy(),
                 request.getBlockedReason());
 
-        webSocketSender.send("/topic/blocked-vehicles", vehicle);
+        webSocketSender.send("/topic/blocked-vehicle", vehicle);
 
         return ResponseEntity.ok(vehicle);
     }
@@ -87,10 +87,12 @@ public class BlockedVehicleController {
                 request.getAllowedBy(),
                 request.getAllowedReason());
 
-        webSocketSender.send("/topic/allowed-vehicles", vehicle);
+        webSocketSender.send("/topic/allowed-vehicle", vehicle);
 
         return ResponseEntity.ok(vehicle);
     }
+
+    
 
     // ✅ Handle guard's response for a blocked vehicle
     @PostMapping("/response/{vehicleNumber}")
