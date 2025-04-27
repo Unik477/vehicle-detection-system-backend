@@ -79,7 +79,7 @@ public class BlockedVehicleController {
     //     return ResponseEntity.ok(vehicle);
     // }
 
-    @PutMapping("/allow/{vehicleNumber}")
+    @PostMapping("/allow/{vehicleNumber}") //replaced PutMapping with PostMapping
     public ResponseEntity<BlockedVehicle> allowVehicle(@PathVariable String vehicleNumber,
             @RequestBody AllowRequest request) {
         BlockedVehicle vehicle = blockedVehicleService.allowVehicleByNumber(
