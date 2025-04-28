@@ -25,6 +25,9 @@ public class VehicleEntryService {
     private BlockedVehicleRepository blockedVehicleRepository;
 
     @Autowired
+    private WebSocketSender webSocketSender;
+
+    @Autowired
     private NotificationService notificationService;
     //Get Vehicle count during a time interval
     public long getVehiclesCountByTimeInterval(LocalDateTime startTime, LocalDateTime endTime) {
@@ -32,35 +35,38 @@ public class VehicleEntryService {
     }
     
     // ✅ Handle vehicle entry or exit
-    public void handleVehicleEntry(VehicleEntry vehicleEntry) {
-        // Check if the vehicle is in the blocked list
+    public VehicleEntry handleVehicleEntry(VehicleEntry vehicleEntry) {
+        // Check if vehicle is blocked
         Optional<BlockedVehicle> blockedVehicle = blockedVehicleRepository.findByVehicleNumberAndStatus(
             vehicleEntry.getVehicleNumber(), BlockedVehicle.Status.BLOCKED
         );
-    
+
         if (blockedVehicle.isPresent()) {
-            // Send notification to React frontend
-            notificationService.sendBlockedVehicleNotification(blockedVehicle.get());
+            webSocketSender.sendBlockedVehicleNotification(blockedVehicle.get());
+            return null;
+        }
+
+        // Process normal entry/exit
+        List<VehicleEntry> activeEntries = vehicleEntryRepository.findByVehicleNumber(vehicleEntry.getVehicleNumber());
+        Optional<VehicleEntry> lastEntry = activeEntries.stream()
+            .filter(entry -> entry.getStatus() == VehicleStatus.IN)
+            .findFirst();
+
+        if (lastEntry.isPresent()) {
+            // Update existing entry to OUT
+            VehicleEntry entry = lastEntry.get();
+            entry.setExitTime(LocalDateTime.now());
+            entry.setExitGate(vehicleEntry.getEntryGate());
+            entry.setStatus(VehicleStatus.OUT);
+            return vehicleEntryRepository.save(entry);
         } else {
-            // Check if the vehicle already has an active entry (status = IN)
-            List<VehicleEntry> activeEntries = vehicleEntryRepository.findByVehicleNumber(vehicleEntry.getVehicleNumber());
-            for (VehicleEntry activeEntry : activeEntries) {
-                if (activeEntry.getStatus() == VehicleStatus.IN) {
-                    // Mark the active entry as exited
-                    activeEntry.setExitTime(LocalDateTime.now());
-                    activeEntry.setExitGate(vehicleEntry.getEntryGate()); // Set the exit gate
-                    activeEntry.setStatus(VehicleStatus.OUT);
-                    vehicleEntryRepository.save(activeEntry);
-                    return; // Exit after marking the previous entry as OUT
-                }
-            }
-    
-            // If no active entry exists, create a new entry
+            // Create new entry
             vehicleEntry.setEntryTime(LocalDateTime.now());
             vehicleEntry.setDate(LocalDate.now());
-            vehicleEntry.setEntryGate(vehicleEntry.getEntryGate()); // Set the entry gate
             vehicleEntry.setStatus(VehicleStatus.IN);
-            vehicleEntryRepository.save(vehicleEntry);
+            VehicleEntry savedEntry = vehicleEntryRepository.save(vehicleEntry);
+            webSocketSender.sendAllowedVehicleNotification(savedEntry);
+            return savedEntry;
         }
     }
 

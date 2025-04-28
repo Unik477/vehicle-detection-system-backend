@@ -1,5 +1,6 @@
 package com.bbau.vehicledetection.backend.controller;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,18 +41,22 @@ public class AuthController {
     // }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody Map<String, String> loginData) {
-        String username = loginData.get("username");
-        String password = loginData.get("password");
+public ResponseEntity<String> login(@RequestBody Map<String, String> loginData) {
+    String username = loginData.get("username");
+    String password = loginData.get("password");
 
-        boolean isAuthenticated = userService.authenticateUser(username, password);
+    boolean isAuthenticated = userService.authenticateUser(username, password);
 
-        if (isAuthenticated) {
-            webSocketSender.send("/topic/login", username + " has logged in.");
-            return ResponseEntity.ok("Login successful");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-        }
+    if (isAuthenticated) {
+        webSocketSender.send("/topic/auth", Map.of(
+            "type", "LOGIN",
+            "username", username,
+            "timestamp", LocalDateTime.now()
+        ));
+        return ResponseEntity.ok("Login successful");
+    } else {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
     }
+}
 
 }

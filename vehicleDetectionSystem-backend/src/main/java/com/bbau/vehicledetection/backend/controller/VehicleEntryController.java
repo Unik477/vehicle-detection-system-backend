@@ -1,6 +1,7 @@
 package com.bbau.vehicledetection.backend.controller;
 
 import com.bbau.vehicledetection.backend.entity.VehicleEntry.VehicleEntry;
+import com.bbau.vehicledetection.backend.entity.VehicleEntry.VehicleStatus;
 import com.bbau.vehicledetection.backend.service.VehicleEntryService;
 import com.bbau.vehicledetection.backend.service.WebSocketSender;
 
@@ -67,13 +68,20 @@ public ResponseEntity<?> getVehiclesCountByTimeInterval(
     }
 }
 
-    @PostMapping("/entry")
+@PostMapping("/entry")
     public ResponseEntity<String> registerVehicleEntry(@RequestBody VehicleEntry vehicleEntry) {
-        vehicleEntryService.handleVehicleEntry(vehicleEntry);
-
-        webSocketSender.send("/topic/vehicle-entry", vehicleEntry);
-
-        return ResponseEntity.ok("Vehicle entry processed successfully.");
+        try {
+            VehicleEntry savedEntry = vehicleEntryService.handleVehicleEntry(vehicleEntry);
+            
+            if (savedEntry == null) {
+                return ResponseEntity.ok("Blocked vehicle detected");
+            }
+            
+            return ResponseEntity.ok("Vehicle entry processed successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body("Error processing vehicle entry: " + e.getMessage());
+        }
     }
 
     // ✅ Get list of vehicles currently inside
