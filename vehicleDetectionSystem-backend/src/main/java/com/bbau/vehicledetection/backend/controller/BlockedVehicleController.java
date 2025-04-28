@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -23,6 +24,13 @@ public class BlockedVehicleController {
     @Autowired
     public BlockedVehicleController(BlockedVehicleService blockedVehicleService) {
         this.blockedVehicleService = blockedVehicleService;
+    }
+
+    // ✅ Get all vehicles (both blocked and allowed)
+    @GetMapping("/all")
+    public ResponseEntity<List<BlockedVehicle>> getAllVehicles() {
+        List<BlockedVehicle> vehicles = blockedVehicleService.getAllVehicles();
+        return ResponseEntity.ok(vehicles);
     }
 
     // ✅ Check if a vehicle is currently blocked

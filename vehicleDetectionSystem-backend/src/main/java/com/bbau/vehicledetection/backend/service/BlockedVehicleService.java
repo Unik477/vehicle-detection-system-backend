@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,6 +22,11 @@ public class BlockedVehicleService {
     // Check if a vehicle is currently blocked
     public boolean isVehicleBlocked(String vehicleNumber) {
         return blockedVehicleRepository.existsByVehicleNumberAndStatus(vehicleNumber, BlockedVehicle.Status.BLOCKED);
+    }
+
+    // Get all vehicles (both blocked and allowed)
+    public List<BlockedVehicle> getAllVehicles() {
+        return blockedVehicleRepository.findAll();
     }
 
     // Get a blocked vehicle entry if exists

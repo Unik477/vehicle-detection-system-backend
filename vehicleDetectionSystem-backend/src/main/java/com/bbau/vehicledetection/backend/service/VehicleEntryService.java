@@ -1,5 +1,6 @@
 package com.bbau.vehicledetection.backend.service;
 
+import com.bbau.vehicledetection.backend.controller.VehicleEntryController;
 import com.bbau.vehicledetection.backend.entity.BlockedVehicle.BlockedVehicle;
 import com.bbau.vehicledetection.backend.entity.VehicleEntry.VehicleEntry;
 import com.bbau.vehicledetection.backend.entity.VehicleEntry.VehicleStatus;
@@ -25,7 +26,11 @@ public class VehicleEntryService {
 
     @Autowired
     private NotificationService notificationService;
-
+    //Get Vehicle count during a time interval
+    public long getVehiclesCountByTimeInterval(LocalDateTime startTime, LocalDateTime endTime) {
+        return vehicleEntryRepository.countByEntryTimeBetween(startTime, endTime);
+    }
+    
     // ✅ Handle vehicle entry or exit
     public void handleVehicleEntry(VehicleEntry vehicleEntry) {
         // Check if the vehicle is in the blocked list
@@ -98,9 +103,27 @@ public class VehicleEntryService {
         VehicleType type = VehicleType.valueOf(vehicleType.toUpperCase()); // Convert String to ENUM
         return vehicleEntryRepository.findAllByVehicleType(type);
     }
+
+
+public VehicleEntryController.VehicleStatistics getVehicleStatistics(LocalDate date) {
+    List<VehicleEntry> entriesForDate = vehicleEntryRepository.findAllByDate(date);
+    
+    long totalEntered = entriesForDate.size();
+    long currentlyInside = entriesForDate.stream()
+            .filter(entry -> entry.getStatus() == VehicleStatus.IN)
+            .count();
+    long currentlyOutside = entriesForDate.stream()
+            .filter(entry -> entry.getStatus() == VehicleStatus.OUT)
+            .count();
+
+    return new VehicleEntryController.VehicleStatistics(
+            totalEntered,
+            currentlyInside,
+            currentlyOutside,
+            date.toString()
+    );
 }
-
-
+}
 
 
 
