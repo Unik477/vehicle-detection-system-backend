@@ -10,8 +10,7 @@ CREATE TABLE vehicle_entries (
     entry_gate INT NOT NULL,
     exit_gate INT NULL,
     image_name VARCHAR(255) NOT NULL,
-    status ENUM('IN', 'OUT') NOT NULL DEFAULT 'IN',
-    CONSTRAINT unique_vehicle_entry UNIQUE (vehicle_number, status)
+    status ENUM('IN', 'OUT') NOT NULL DEFAULT 'IN'
 );
 
 

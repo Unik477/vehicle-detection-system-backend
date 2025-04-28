@@ -21,8 +21,23 @@
 				--> Get All Rows for a Specific Date(GET)-- http://localhost:8080/api/vehicles/date/{date(format- YYYY-MM-DD)}
 
 				--> Get All Rows for a Specific Vehicle Type(GET)-- http://localhost:8080/api/vehicles/type/{vehicleType(IN CAPS)}
+				
+				--> Get Vehicles from a Specific Time Period(GET) -- http://localhost:8080/api/vehicles/count/interval?startTime=2025-04-27T09:00:00&endTime=										2025-04-27T22:00:00
+						Response JSON-- {
+  								"startTime": "2025-04-27T09:00:00",
+  								"endTime": "2025-04-27T22:00:00",
+  								"count": 28
+								}
 
-###############################################################################################################
+				--> Get Vehicle Statistics for a Given Date(GET) -- http://localhost:8080/api/vehicles/statistics/2025-04-27
+						Response JSON-- {
+ 								 "totalEntered": 30,
+  								 "currentlyInside": 3,
+  								 "currentlyOutside": 27,
+  								 "date": "2025-04-27"
+								}
+
+#########################################################################################################################################################################
 
 ## LOGIN 
 				--> POST http://localhost:8080/api/auth/login
