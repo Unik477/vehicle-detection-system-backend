@@ -33,4 +33,6 @@ long countByEntryTimeBetween(@Param("startTime") LocalDateTime startTime, @Param
     // Get all rows for a specific vehicle type
     List<VehicleEntry> findAllByVehicleType(VehicleType vehicleType);
 
+    //Delete Entry based on Gate number, Vehicle number and Entry date
+    List<VehicleEntry> findByVehicleNumberAndDateAndEntryGate(String vehicleNumber, LocalDate date, int entryGate);
 }

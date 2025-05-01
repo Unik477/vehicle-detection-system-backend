@@ -70,6 +70,23 @@ public class VehicleEntryService {
         }
     }
 
+    //Delete vehicle by Number , entry date and Entry GAte
+    public boolean deleteVehicleEntry(String vehicleNumber, LocalDate date, int entryGate) {
+        // Find matching entries
+        List<VehicleEntry> entries = vehicleEntryRepository.findByVehicleNumberAndDateAndEntryGate(
+            vehicleNumber, 
+            date, 
+            entryGate
+        );
+        
+        if (!entries.isEmpty()) {
+            // Delete directly without triggering websocket notifications
+            vehicleEntryRepository.deleteById(entries.get(0).getId());
+            return true;
+        }
+        
+        return false;
+    }
     // ✅ Get all active vehicles
     public List<VehicleEntry> getAllActiveVehicles() {
         return vehicleEntryRepository.findByStatus(VehicleStatus.IN);

@@ -64,14 +64,17 @@ public class BlockedVehicleController {
 
     @PostMapping("/block")
     public ResponseEntity<BlockedVehicle> blockVehicle(@RequestBody BlockRequest request) {
-        BlockedVehicle vehicle = blockedVehicleService.blockVehicle(
+        try {
+            BlockedVehicle vehicle = blockedVehicleService.blockVehicle(
                 request.getVehicleNumber(),
                 request.getBlockedBy(),
-                request.getBlockedReason());
-
-        webSocketSender.send("/topic/blocked-vehicle", vehicle);
-
-        return ResponseEntity.ok(vehicle);
+                request.getBlockedReason(),
+                request.isSuppressNotification()
+            );
+            return ResponseEntity.ok(vehicle);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     // ✅ Allow a previously blocked vehicle by vehicle number
@@ -123,6 +126,15 @@ public class BlockedVehicleController {
         private String vehicleNumber;
         private String blockedBy;
         private String blockedReason;
+        private boolean suppressNotification;
+
+        public boolean isSuppressNotification() {
+            return suppressNotification;
+        }
+    
+        public void setSuppressNotification(boolean suppressNotification) {
+            this.suppressNotification = suppressNotification;
+        }
 
         public String getVehicleNumber() {
             return vehicleNumber;

@@ -68,6 +68,31 @@ public ResponseEntity<?> getVehiclesCountByTimeInterval(
     }
 }
 
+//Deleting an entry by Vehicle number, gate number and date
+@DeleteMapping("/delete")
+public ResponseEntity<?> deleteVehicleEntry(@RequestBody DeleteEntryRequest request) {
+    try {
+        LocalDate date = LocalDate.parse(request.getEntryDate());
+        boolean deleted = vehicleEntryService.deleteVehicleEntry(
+            request.getVehicleNumber(), 
+            date, 
+            request.getEntryGate()
+        );
+        
+        if (deleted) {
+            return ResponseEntity.ok("Vehicle entry deleted successfully");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    } catch (DateTimeParseException e) {
+        return ResponseEntity.badRequest()
+            .body("Invalid date format. Use format: yyyy-MM-dd");
+    } catch (Exception e) {
+        return ResponseEntity.badRequest()
+            .body("Error deleting entry: " + e.getMessage());
+    }
+}
+
 @PostMapping("/entry")
     public ResponseEntity<String> registerVehicleEntry(@RequestBody VehicleEntry vehicleEntry) {
         try {
@@ -134,6 +159,22 @@ public ResponseEntity<?> getVehiclesCountByTimeInterval(
 
 
 // DTO as an inner class
+// DTO class for Deliting entry
+public static class DeleteEntryRequest {
+    private String vehicleNumber;
+    private String entryDate;
+    private int entryGate;
+
+    // Getters and Setters
+    public String getVehicleNumber() { return vehicleNumber; }
+    public void setVehicleNumber(String vehicleNumber) { this.vehicleNumber = vehicleNumber; }
+
+    public String getEntryDate() { return entryDate; }
+    public void setEntryDate(String entryDate) { this.entryDate = entryDate; }
+
+    public int getEntryGate() { return entryGate; }
+    public void setEntryGate(int entryGate) { this.entryGate = entryGate; }
+}
 //DTO for STATISTICS
 public static class VehicleStatistics {
     private long totalEntered;

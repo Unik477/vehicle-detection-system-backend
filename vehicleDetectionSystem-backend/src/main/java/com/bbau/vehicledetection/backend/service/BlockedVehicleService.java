@@ -19,6 +19,9 @@ public class BlockedVehicleService {
         this.blockedVehicleRepository = blockedVehicleRepository;
     }
 
+    @Autowired
+    private WebSocketSender webSocketSender;
+
     // Check if a vehicle is currently blocked
     public boolean isVehicleBlocked(String vehicleNumber) {
         return blockedVehicleRepository.existsByVehicleNumberAndStatus(vehicleNumber, BlockedVehicle.Status.BLOCKED);
@@ -35,42 +38,55 @@ public class BlockedVehicleService {
     }
 
     // Block a vehicle
-public BlockedVehicle blockVehicle(String vehicleNumber, String blockedBy, String reason) {
-    // Check if the vehicle is already blocked
-    Optional<BlockedVehicle> existingVehicle = blockedVehicleRepository.findByVehicleNumberAndStatus(vehicleNumber, BlockedVehicle.Status.BLOCKED);
-    if (existingVehicle.isPresent()) {
-        throw new IllegalArgumentException("Vehicle is already blocked: " + vehicleNumber);
-    }
-
-    // Check if the vehicle's status is REMOVED
-    Optional<BlockedVehicle> removedVehicle = blockedVehicleRepository.findByVehicleNumberAndStatus(vehicleNumber, BlockedVehicle.Status.REMOVED);
-    if (removedVehicle.isPresent()) {
-        // Update the existing entry to BLOCKED
-        BlockedVehicle vehicle = removedVehicle.get();
+    public BlockedVehicle blockVehicle(String vehicleNumber, String blockedBy, String reason, boolean suppressNotification) {
+        // Check if the vehicle is already blocked
+        Optional<BlockedVehicle> existingVehicle = blockedVehicleRepository.findByVehicleNumberAndStatus(vehicleNumber, BlockedVehicle.Status.BLOCKED);
+        if (existingVehicle.isPresent()) {
+            throw new IllegalArgumentException("Vehicle is already blocked: " + vehicleNumber);
+        }
+    
+        // Check if the vehicle's status is REMOVED
+        Optional<BlockedVehicle> removedVehicle = blockedVehicleRepository.findByVehicleNumberAndStatus(vehicleNumber, BlockedVehicle.Status.REMOVED);
+        if (removedVehicle.isPresent()) {
+            // Update the existing entry to BLOCKED
+            BlockedVehicle vehicle = removedVehicle.get();
+            vehicle.setStatus(BlockedVehicle.Status.BLOCKED);
+            vehicle.setBlockedBy(blockedBy);
+            vehicle.setBlockedReason(reason);
+            vehicle.setBlockedDate(LocalDateTime.now());
+            vehicle.setAllowedBy(null); // Clear allowedBy
+            vehicle.setAllowedReason(null); // Clear allowedReason
+            vehicle.setAllowedDate(null); // Clear allowedDate
+            BlockedVehicle savedVehicle = blockedVehicleRepository.save(vehicle);
+            
+            if (!suppressNotification) {
+                webSocketSender.sendBlockedVehicleNotification(savedVehicle);
+            }
+            
+            return savedVehicle;
+        }
+    
+        // Create a new blocked vehicle entry
+        BlockedVehicle vehicle = new BlockedVehicle();
+        vehicle.setVehicleNumber(vehicleNumber);
         vehicle.setStatus(BlockedVehicle.Status.BLOCKED);
         vehicle.setBlockedBy(blockedBy);
         vehicle.setBlockedReason(reason);
         vehicle.setBlockedDate(LocalDateTime.now());
-        vehicle.setAllowedBy(null); // Clear allowedBy
-        vehicle.setAllowedReason(null); // Clear allowedReason
-        vehicle.setAllowedDate(null); // Clear allowedDate
-        return blockedVehicleRepository.save(vehicle);
+        BlockedVehicle savedVehicle = blockedVehicleRepository.save(vehicle);
+        
+        if (!suppressNotification) {
+            webSocketSender.sendBlockedVehicleNotification(savedVehicle);
+        }
+        
+        return savedVehicle;
     }
-
-    // Create a new blocked vehicle entry
-    BlockedVehicle vehicle = new BlockedVehicle();
-    vehicle.setVehicleNumber(vehicleNumber);
-    vehicle.setStatus(BlockedVehicle.Status.BLOCKED);
-    vehicle.setBlockedBy(blockedBy);
-    vehicle.setBlockedReason(reason);
-    vehicle.setBlockedDate(LocalDateTime.now());
-    return blockedVehicleRepository.save(vehicle);
-}
 
     // Allow a previously blocked vehicle by vehicle number
     public BlockedVehicle allowVehicleByNumber(String vehicleNumber, String allowedBy, String reason) {
         // Find the blocked vehicle by its vehicle number
-        BlockedVehicle vehicle = blockedVehicleRepository.findByVehicleNumberAndStatus(vehicleNumber, BlockedVehicle.Status.BLOCKED)
+        BlockedVehicle vehicle = blockedVehicleRepository
+                .findByVehicleNumberAndStatus(vehicleNumber, BlockedVehicle.Status.BLOCKED)
                 .orElseThrow(() -> new RuntimeException("Blocked Vehicle not found"));
 
         // Update the vehicle's status and allowed details
@@ -81,4 +97,3 @@ public BlockedVehicle blockVehicle(String vehicleNumber, String blockedBy, Strin
         return blockedVehicleRepository.save(vehicle);
     }
 }
-
