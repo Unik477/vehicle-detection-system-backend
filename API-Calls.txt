@@ -36,6 +36,12 @@
   								 "currentlyOutside": 27,
   								 "date": "2025-04-27"
 								}
+				--> Delete a Vehicle Entry (for Guard's Vehicle blocking) (DELETE) -- http://localhost:8080/api/vehicles/delete
+										JSON BODY-- '{
+												"vehicleNumber": "UP32GF2346",
+												"entryDate": "2024-04-20",
+												"entryGate": 1
+											      }'
 
 #########################################################################################################################################################################
 
