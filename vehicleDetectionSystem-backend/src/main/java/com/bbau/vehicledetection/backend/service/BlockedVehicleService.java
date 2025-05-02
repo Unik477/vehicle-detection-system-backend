@@ -40,40 +40,20 @@ public class BlockedVehicleService {
     // Block a vehicle
     public BlockedVehicle blockVehicle(String vehicleNumber, String blockedBy, String reason, boolean suppressNotification) {
         // Check if the vehicle is already blocked
-        Optional<BlockedVehicle> existingVehicle = blockedVehicleRepository.findByVehicleNumberAndStatus(vehicleNumber, BlockedVehicle.Status.BLOCKED);
+        Optional<BlockedVehicle> existingVehicle = blockedVehicleRepository.findByVehicleNumberAndStatus(
+            vehicleNumber, BlockedVehicle.Status.BLOCKED);
         if (existingVehicle.isPresent()) {
             throw new IllegalArgumentException("Vehicle is already blocked: " + vehicleNumber);
         }
     
-        // Check if the vehicle's status is REMOVED
-        Optional<BlockedVehicle> removedVehicle = blockedVehicleRepository.findByVehicleNumberAndStatus(vehicleNumber, BlockedVehicle.Status.REMOVED);
-        if (removedVehicle.isPresent()) {
-            // Update the existing entry to BLOCKED
-            BlockedVehicle vehicle = removedVehicle.get();
-            vehicle.setStatus(BlockedVehicle.Status.BLOCKED);
-            vehicle.setBlockedBy(blockedBy);
-            vehicle.setBlockedReason(reason);
-            vehicle.setBlockedDate(LocalDateTime.now());
-            vehicle.setAllowedBy(null); // Clear allowedBy
-            vehicle.setAllowedReason(null); // Clear allowedReason
-            vehicle.setAllowedDate(null); // Clear allowedDate
-            BlockedVehicle savedVehicle = blockedVehicleRepository.save(vehicle);
-            
-            if (!suppressNotification) {
-                webSocketSender.sendBlockedVehicleNotification(savedVehicle);
-            }
-            
-            return savedVehicle;
-        }
-    
-        // Create a new blocked vehicle entry
-        BlockedVehicle vehicle = new BlockedVehicle();
-        vehicle.setVehicleNumber(vehicleNumber);
-        vehicle.setStatus(BlockedVehicle.Status.BLOCKED);
-        vehicle.setBlockedBy(blockedBy);
-        vehicle.setBlockedReason(reason);
-        vehicle.setBlockedDate(LocalDateTime.now());
-        BlockedVehicle savedVehicle = blockedVehicleRepository.save(vehicle);
+        // Always create a new entry when blocking
+        BlockedVehicle newVehicle = new BlockedVehicle();
+        newVehicle.setVehicleNumber(vehicleNumber);
+        newVehicle.setStatus(BlockedVehicle.Status.BLOCKED);
+        newVehicle.setBlockedBy(blockedBy);
+        newVehicle.setBlockedReason(reason);
+        newVehicle.setBlockedDate(LocalDateTime.now());
+        BlockedVehicle savedVehicle = blockedVehicleRepository.save(newVehicle);
         
         if (!suppressNotification) {
             webSocketSender.sendBlockedVehicleNotification(savedVehicle);
