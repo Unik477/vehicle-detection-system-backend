@@ -34,6 +34,11 @@ public class VehicleEntryService {
         return vehicleEntryRepository.countByEntryTimeBetween(startTime, endTime);
     }
     
+    //get vehicles from a time interval
+    public List<VehicleEntry> getVehicleEntriesByTimeInterval(LocalDateTime startTime, LocalDateTime endTime) {
+        return vehicleEntryRepository.findByEntryTimeBetween(startTime, endTime);
+    }
+    
     // ✅ Handle vehicle entry or exit
     public VehicleEntry handleVehicleEntry(VehicleEntry vehicleEntry) {
         // Check if vehicle is blocked

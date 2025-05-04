@@ -92,7 +92,29 @@ public ResponseEntity<?> deleteVehicleEntry(@RequestBody DeleteEntryRequest requ
             .body("Error deleting entry: " + e.getMessage());
     }
 }
+    // GEt data from an intervel
+@GetMapping("/interval")
+public ResponseEntity<?> getVehicleEntriesByTimeInterval(
+        @RequestParam String startTime,
+        @RequestParam String endTime) {
+    try {
+        LocalDateTime start = LocalDateTime.parse(startTime); // Format: yyyy-MM-ddTHH:mm:ss
+        LocalDateTime end = LocalDateTime.parse(endTime);     // Format: yyyy-MM-ddTHH:mm:ss
+        
+        List<VehicleEntry> entries = vehicleEntryService.getVehicleEntriesByTimeInterval(start, end);
+        
+        return ResponseEntity.ok(entries);
+    } catch (DateTimeParseException e) {
+        return ResponseEntity.badRequest()
+            .body("Invalid date format. Use format: yyyy-MM-ddTHH:mm:ss");
+    } catch (Exception e) {
+        return ResponseEntity.badRequest()
+            .body("Error retrieving entries: " + e.getMessage());
+    }
+}
 
+
+// mark entry
 @PostMapping("/entry")
     public ResponseEntity<String> registerVehicleEntry(@RequestBody VehicleEntry vehicleEntry) {
         try {
